@@ -321,7 +321,7 @@ public class FlutterPianoAudioDetectionPlugin implements FlutterPlugin, MethodCa
     //passing data from platform to flutter requires ui thread
     runOnUIThread(() ->{
       if(events != null){
-        Log.v(LOG_TAG, "Result : " + recognitionResult);
+//        Log.v(LOG_TAG, "Result : " + recognitionResult);
         events.success(recognitionResult);
       }
     });
