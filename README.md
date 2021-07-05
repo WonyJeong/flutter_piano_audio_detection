@@ -1,4 +1,4 @@
-# Flutter_Piano_Audio_Detection
+# FlutterPianoAudioDetection Plugin
 
 <br>
 
