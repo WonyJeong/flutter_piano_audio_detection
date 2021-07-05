@@ -15,18 +15,14 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final isRecording = ValueNotifier<bool>(false);
   FlutterPianoAudioDetection fpad = new FlutterPianoAudioDetection();
-  Stream<List<dynamic>>? result;
 
-  String noteOn = "x";
+  Stream<List<dynamic>>? result;
+  List<String> notes = [];
 
   @override
   void initState() {
     super.initState();
     fpad.prepare();
-  }
-
-  Future<bool> _fetch() async {
-    return fpad.getTfLiteState == tfLiteState.SUCCESS ? true : false;
   }
 
   void prepare() {
@@ -44,16 +40,11 @@ class _MyAppState extends State<MyApp> {
 
   void getResult() {
     result = fpad.startAudioRecognition();
-
     result!.listen((event) {
-      List<String> notes = [];
-      event.forEach((element) {
-        // print(element);
-        int tempnum = element;
-        notes.add(fpad.getNoteName(tempnum - 20));
-        // print(fpad.getNoteName(tempnum));
+      setState(() {
+        notes = fpad.getNotes(event);
       });
-      if (notes.length > 0) print(notes);
+      print(notes);
     });
   }
 
@@ -62,33 +53,10 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Flutter Pitch Tracker'),
+          title: const Text('Flutter Piano Audio Detection'),
         ),
         body: Center(
-          child: FutureBuilder<bool>(
-            future: _fetch(),
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              // print(snapshot);
-              if (!snapshot.hasData || !snapshot.data) {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    CircularProgressIndicator(),
-                    Padding(padding: EdgeInsets.only(bottom: 20)),
-                    Text(
-                      "Loading",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    )
-                  ],
-                );
-              } else {
-                return Container();
-              }
-            },
-          ),
+          child: Text("Hello FPAD!"),
         ),
         floatingActionButton: Container(
           child: ValueListenableBuilder(
