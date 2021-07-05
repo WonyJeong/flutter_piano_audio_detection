@@ -111,3 +111,6 @@ Please look at the [example](https://github.com/Caldarie/flutter_tflite_audio/tr
 ## License
 
 MIT
+  
+## Dev Log
+  - 2021.07.05 flutter packages publish
