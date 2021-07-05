@@ -1,0 +1,4 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  package="com.example.flutter_piano_audio_detection">
+    <uses-permission android:name="android.Manifest.permission.RECORD_AUDIO"/>
+</manifest>
