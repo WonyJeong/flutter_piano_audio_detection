@@ -30,6 +30,7 @@ To keep this project alive, consider giving a star or a like. Contributors are a
 ```Gradle
 aaptOptions {
         noCompress 'tflite'
+  }
 ```
 
 <br>
