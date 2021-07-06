@@ -1,0 +1,28 @@
+PODS:
+  - Flutter (1.0.0)
+  - flutter_piano_audio_detection (0.0.1):
+    - Flutter
+  - "permission_handler (5.1.0+2)":
+    - Flutter
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - flutter_piano_audio_detection (from `.symlinks/plugins/flutter_piano_audio_detection/ios`)
+  - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  flutter_piano_audio_detection:
+    :path: ".symlinks/plugins/flutter_piano_audio_detection/ios"
+  permission_handler:
+    :path: ".symlinks/plugins/permission_handler/ios"
+
+SPEC CHECKSUMS:
+  Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
+  flutter_piano_audio_detection: 7dcd2b852e5acc0ce0a472285847730aaccabf71
+  permission_handler: ccb20a9fad0ee9b1314a52b70b76b473c5f8dab0
+
+PODFILE CHECKSUM: 6086f768cab58309445c4b74ab8432383929c89f
+
+COCOAPODS: 1.10.1
