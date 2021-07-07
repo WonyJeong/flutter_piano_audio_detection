@@ -1,6 +1,8 @@
 # FlutterPianoAudioDetection Plugin
 
 <br>
+Editing audio transcription method... 
+<br>
 
 Flutter Piano Audio Detection implemented with Tensorflow Lite Model ([Google Magenta](https://github.com/magenta/magenta/tree/main/magenta/models/onsets_frames_transcription/realtime))
 
