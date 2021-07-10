@@ -1,24 +1,59 @@
 # FlutterPianoAudioDetection Plugin
 
 <br>
-Editing audio transcription method... 
-<br>
 
 Flutter Piano Audio Detection implemented with Tensorflow Lite Model ([Google Magenta](https://github.com/magenta/magenta/tree/main/magenta/models/onsets_frames_transcription/realtime))
 
 - [x] Android Implementation 
-- [ ] iOS/iPadOS Implementation
+- [x] iOS/iPadOS Implementation
 
 To keep this project alive, consider giving a star or a like. Contributors are also welcome.
 
 <br>
 
-## iOS Installation & Permissions
-```
-  (っ ╥ ‿‿ ╥ )っ to be updated soon
-```
+## Setting up a Flutter app with flutter_piano_audio_detection
 
-## Android Installation & Permissions
+### 1. Setting Tensorflow model file into your project
+> First, Add tensorflow lite file in your project. Copy the downloaded [onsets_frames_wavinput.tflite](https://storage.googleapis.com/magentadata/models/onsets_frames_transcription/tflite/onsets_frames_wavinput.tflite).   
+
+> Android : Copy the downloaded file YourApp/android/app/src/main/assets   
+> iOS : Navigator -> Build Phases -> Copy Bundle Resourse    
+
+If you have experience installing other plugins, it should be very simple.
+<br>
+
+### 2. iOS Installation & Permissions
+
+1. Add the permissions below to your info.plist. This could be found in  <YourApp>/ios/Runner folder. For example:
+
+```
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Your Text</string>
+```
+<br>
+  2. Add the following to your Podfile file.     
+  Since the AudioModule library is sensitive to the iOS version, please apply the ios version in the Podfile to 12.1. and This plugin depends on [permission_handler flutter plugin](https://pub.dev/packages/permission_handler).   
+  
+``` Podfile 
+    platform :ios, '12.1' // or higher version.
+    
+    // ...
+ 
+    post_install do |installer|
+      installer.pods_project.targets.each do |target|
+        target.build_configurations.each do |config|
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
+            '$(inherited)',
+            ## dart: PermissionGroup.microphone
+            'PERMISSION_MICROPHONE=1',
+          ]
+        end
+      end
+    end
+```
+<br>
+  
+### 3. Android Installation & Permissions
 1. Add the permissions below to your AndroidManifest. This could be found in  <YourApp>/android/app/src folder. For example:
 
 ```
@@ -36,10 +71,6 @@ aaptOptions {
 ```
 
 <br>
-
-3. Add tensorflow lite file in your project.
-  Copy the downloaded [onsets_frames_wavinput.tflite](https://storage.googleapis.com/magentadata/models/onsets_frames_transcription/tflite/onsets_frames_wavinput.tflite) to YourApp/android/app/src/main/assets
-
 
 
 ## How to use this plugin
@@ -115,5 +146,5 @@ Please look at the [example](https://github.com/Caldarie/flutter_tflite_audio/tr
 
 MIT
   
-## Dev Log
-  - 2021.07.05 flutter packages publish
+## Reference
+- TensorflowLite https://www.tensorflow.org/lite?hl=ko
