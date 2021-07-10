@@ -1,4 +1,8 @@
 # FlutterPianoAudioDetection Plugin
+[![pub package](https://img.shields.io/pub/v/flutter_piano_audio_detection.svg?label=version&color=blue)](https://pub.dev/packages/flutter_piano_audio_detection)
+[![likes](https://badges.bar/flutter_piano_audio_detection/likes)](https://pub.dev/packages/flutter_piano_audio_detection/score)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![style: effective dart](https://img.shields.io/badge/style-effective_dart-40c4ff.svg)](https://pub.dev/packages/effective_dart)
 
 <br>
 
@@ -74,7 +78,7 @@ aaptOptions {
 
 
 ## How to use this plugin
-Please look at the [example](https://github.com/Caldarie/flutter_tflite_audio/tree/master/example) on how to implement these futures.
+Please look at the [example](https://github.com/WonyJeong/flutter_piano_audio_detection/tree/main/example) on how to implement these futures.
 
 1. Add line in pubspec.yaml
 ```
