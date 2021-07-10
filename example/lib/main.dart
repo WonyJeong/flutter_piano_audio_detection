@@ -56,7 +56,7 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Flutter Piano Audio Detection'),
         ),
         body: Center(
-          child: Text("Hello FPAD!"),
+          child: Text("Hello FPAD."),
         ),
         floatingActionButton: Container(
           child: ValueListenableBuilder(

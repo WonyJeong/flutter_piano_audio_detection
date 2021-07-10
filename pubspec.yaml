@@ -1,7 +1,9 @@
 name: flutter_piano_audio_detection
-description: A new Flutter plugin.
-version: 0.0.1
-homepage:
+description: Flutter plug-in for Piano Audio Detection.
+version: 1.0.0
+maintainer: WonyJeong
+homepage: https://github.com/WonyJeong
+repository : https://github.com/WonyJeong/flutter_piano_audio_detection
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -11,7 +13,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  permission_handler: 8.1.1
+  permission_handler: ^8.1.1
 
 dev_dependencies:
   flutter_test:

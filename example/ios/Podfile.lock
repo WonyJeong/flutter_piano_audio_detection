@@ -2,13 +2,26 @@ PODS:
   - Flutter (1.0.0)
   - flutter_piano_audio_detection (0.0.1):
     - Flutter
+    - TensorFlowLiteSwift
   - "permission_handler (5.1.0+2)":
     - Flutter
+  - TensorFlowLiteC (2.5.0):
+    - TensorFlowLiteC/Core (= 2.5.0)
+  - TensorFlowLiteC/Core (2.5.0)
+  - TensorFlowLiteSwift (2.5.0):
+    - TensorFlowLiteSwift/Core (= 2.5.0)
+  - TensorFlowLiteSwift/Core (2.5.0):
+    - TensorFlowLiteC (= 2.5.0)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_piano_audio_detection (from `.symlinks/plugins/flutter_piano_audio_detection/ios`)
   - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
+
+SPEC REPOS:
+  trunk:
+    - TensorFlowLiteC
+    - TensorFlowLiteSwift
 
 EXTERNAL SOURCES:
   Flutter:
@@ -20,9 +33,11 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
-  flutter_piano_audio_detection: 7dcd2b852e5acc0ce0a472285847730aaccabf71
-  permission_handler: ccb20a9fad0ee9b1314a52b70b76b473c5f8dab0
+  flutter_piano_audio_detection: 95784c23719507400a5f92f60b4a700f03472c71
+  permission_handler: f1671c1163f814f99824ae20daeaafdd280fe9ae
+  TensorFlowLiteC: 9115580176f050caa70fea478dba3d5a75c612a4
+  TensorFlowLiteSwift: 50063271b9ba99202c4d96a969a518eee2b5807e
 
-PODFILE CHECKSUM: 6086f768cab58309445c4b74ab8432383929c89f
+PODFILE CHECKSUM: 5b2faed4a80003f3c496af13de1c09cb35486d6d
 
 COCOAPODS: 1.10.1

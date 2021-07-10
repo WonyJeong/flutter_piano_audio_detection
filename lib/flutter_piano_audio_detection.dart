@@ -73,8 +73,8 @@ class FlutterPianoAudioDetection {
     return notes;
   }
 
-  String getNoteName(int midiNumber) {
-    return noteParser.getNoteName(midiNumber - 20);
+  String getNoteName(int pianoKeyNumber) {
+    return noteParser.getNoteName(pianoKeyNumber);
   }
 
   tfLiteState get getTfLiteState => _tfLiteState;

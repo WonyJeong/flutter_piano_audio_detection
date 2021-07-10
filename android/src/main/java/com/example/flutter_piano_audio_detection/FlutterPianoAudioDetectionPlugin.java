@@ -51,17 +51,16 @@ public class FlutterPianoAudioDetectionPlugin implements FlutterPlugin, MethodCa
   private String MODEL_FILENAME = "onsets_frames_wavinput.tflite"; //Google Magenta Tflite Model File
 
   AudioRecord record = null;
-  private int SAMPLE_RATE = 16000;
+  private int OUT_STEP_NOTES = 32;
+  private int SAMPLE_RATE = 16000; // Google Magenta Default Sample Rate
   private int RECORDING_LENGTH = 17920;
-  private long MINIMUM_TIME_BETWEEN_SAMPLES_MS = 30;
 
   //Working variables.
-  boolean lastInferenceRun = false;
-  private short[] recordingBuffer = new short[RECORDING_LENGTH];
   private int recordingOffset = 0;
+  boolean lastInferenceRun = false;
   boolean shouldContinue = true;
   boolean shouldContinueRecognition = true;
-  private long lastProcessingTimeMs;
+  private short[] recordingBuffer = new short[RECORDING_LENGTH];
 
   private Thread recordingThread = null;
   private Thread recognitionThread = null;
@@ -71,7 +70,6 @@ public class FlutterPianoAudioDetectionPlugin implements FlutterPlugin, MethodCa
   private ReentrantLock recordingBufferLock = new ReentrantLock();
 
   private Interpreter tfLite = null;
-
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
@@ -162,7 +160,6 @@ public class FlutterPianoAudioDetectionPlugin implements FlutterPlugin, MethodCa
 
   private void record(){
     Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO);
-
     int bufferSize = AudioRecord.getMinBufferSize(
             SAMPLE_RATE,
             AudioFormat.CHANNEL_IN_MONO,
@@ -238,10 +235,10 @@ public class FlutterPianoAudioDetectionPlugin implements FlutterPlugin, MethodCa
   private void recognize(){
     Log.v(LOG_TAG, "Start Recognition");
 
-    short[] inputBuffer = new short[RECORDING_LENGTH];
-    float[][] floatInputBuffer = new float[1][RECORDING_LENGTH];
-    float[][][] outputScores = new float[1][32][88];
-    int[] prevResult = new int[88];
+    int threshold = 20;
+    short[] inputBuffer = new short[RECORDING_LENGTH]; // Recoding length : 17920
+    float[][] floatInputBuffer = new float[RECORDING_LENGTH][1];
+    float [][][] floatOutputBuffer = new float [1][OUT_STEP_NOTES][88];
 
     while (shouldContinueRecognition) {
       recordingBufferLock.lock();
@@ -267,41 +264,34 @@ public class FlutterPianoAudioDetectionPlugin implements FlutterPlugin, MethodCa
         recordingBufferLock.unlock();
       }
 
+      // We need to feed in float values between -1.0 and 1.0, so divide the
+      // signed 16-bit inputs.
       for (int i = 0; i < RECORDING_LENGTH; i++){
-        floatInputBuffer[0][i] = inputBuffer[i] / 32767.0f;
+        floatInputBuffer[i][0] = inputBuffer[i] / 32767.0f;
       }
 
       Object[] inputArray = {floatInputBuffer};
       Map<Integer, Object> outputMap = new HashMap<>();
-      outputMap.put(0, outputScores);
+      outputMap.put(0, floatOutputBuffer);
 
-      long startTime = new Date().getTime();
       tfLite.runForMultipleInputsOutputs(inputArray,outputMap);
-      lastProcessingTimeMs = new Date().getTime() - startTime;
 
       float[][][] restemp = (float[][][]) outputMap.get(0);
       int[] result = new int[88];
 
       for (int i = 0; i < 32; i++) {
         for (int j = 0; j < 88; j++) {
-          if(restemp[0][i][j] > 0) {
-            result[j] = result[j] + 1;
+          if(restemp[0][i][j] > 0) { // sigmoid threshold : 0
+            result[j] += restemp[0][i][j]; //result[j] + 1;
           }
         }
       }
 
       List<Integer> resultList = new ArrayList<Integer>();
-
       for (int i = 0; i < 88; i++) {
-        int midiNum = i + 21;
-        if(prevResult[i] == 0 && result[i] > 0){
-//          System.out.println("[Note On] midiNum : " + midiNum);
-          resultList.add(midiNum);
+        if (result[i] > threshold){
+          resultList.add(i);
         }
-        if(prevResult[i] > 0 && result[i] == 0){
-//          System.out.println("[Note Off] midiNum" + midiNum);
-        }
-        prevResult[i] = result[i];
       }
       getResult(resultList);
     }
@@ -311,17 +301,6 @@ public class FlutterPianoAudioDetectionPlugin implements FlutterPlugin, MethodCa
     //passing data from platform to flutter requires ui thread
     runOnUIThread(() ->{
       if(events != null){
-//        Log.v(LOG_TAG, "Result : " + recognitionResult);
-        events.success(recognitionResult);
-      }
-    });
-  }
-
-  public void getResult(int recognitionResult) {
-    //passing data from platform to flutter requires ui thread
-    runOnUIThread(() ->{
-      if(events != null){
-//        Log.v(LOG_TAG, "Result : " + recognitionResult);
         events.success(recognitionResult);
       }
     });

@@ -1,6 +1,5 @@
 // Define Note Name from Piano KeyNumber1 to Piano KeyNumber 88
 List<String> noteName = [
-  "",
   "A0",
   "A#0/Bb0",
   "B0",
