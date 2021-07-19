@@ -91,7 +91,7 @@ public class FlutterPianoAudioDetectionPlugin implements FlutterPlugin, MethodCa
   @Override
   public void onListen(Object arguments, EventChannel.EventSink events) {
     this.events = events;
-    this.arguments = (HashMap)arguments;
+    this.arguments = (HashMap) arguments;
   }
 
   @Override
@@ -235,11 +235,10 @@ public class FlutterPianoAudioDetectionPlugin implements FlutterPlugin, MethodCa
   private void recognize(){
     Log.v(LOG_TAG, "Start Recognition");
 
-    int threshold = 20;
-    short[] inputBuffer = new short[RECORDING_LENGTH]; // Recoding length : 17920
+    short[] inputBuffer = new short[RECORDING_LENGTH];
     float[][] floatInputBuffer = new float[RECORDING_LENGTH][1];
     float [][][] floatOutputBuffer = new float [1][OUT_STEP_NOTES][88];
-
+    
     while (shouldContinueRecognition) {
       recordingBufferLock.lock();
       try{
@@ -270,34 +269,46 @@ public class FlutterPianoAudioDetectionPlugin implements FlutterPlugin, MethodCa
         floatInputBuffer[i][0] = inputBuffer[i] / 32767.0f;
       }
 
+      int idxFrameLogits = tfLite.getOutputIndex("frame_logits");
+      int idxOnsetLogits = tfLite.getOutputIndex("onset_logits");
+      int idxOffsetLogits = tfLite.getOutputIndex("offset_logits");
+      int idxVelocityValue = tfLite.getOutputIndex("velocity_values");
+
       Object[] inputArray = {floatInputBuffer};
       Map<Integer, Object> outputMap = new HashMap<>();
-      outputMap.put(0, floatOutputBuffer);
 
-      tfLite.runForMultipleInputsOutputs(inputArray,outputMap);
+      outputMap.put(idxFrameLogits, new float [1][OUT_STEP_NOTES][88]);
+      outputMap.put(idxOnsetLogits, new float [1][OUT_STEP_NOTES][88]);
+      outputMap.put(idxOffsetLogits, new float [1][OUT_STEP_NOTES][88]);
+      outputMap.put(idxVelocityValue, new float [1][OUT_STEP_NOTES][88]);
 
-      float[][][] restemp = (float[][][]) outputMap.get(0);
-      int[] result = new int[88];
+      tfLite.runForMultipleInputsOutputs(inputArray,outputMap);;
 
-      for (int i = 0; i < 32; i++) {
-        for (int j = 0; j < 88; j++) {
-          if(restemp[0][i][j] > 0) { // sigmoid threshold : 0
-            result[j] += restemp[0][i][j]; //result[j] + 1;
-          }
+       float[] frames = ((float [][][]) outputMap.get(idxFrameLogits))[0][0];
+      float[] onsets = ((float [][][]) outputMap.get(idxOnsetLogits))[0][0];
+      float[] offsets = ((float [][][]) outputMap.get(idxOffsetLogits))[0][0];
+      float[] velocities = ((float [][][]) outputMap.get(idxVelocityValue))[0][0];
+
+      List<Map<String, Object>> flutterResult = new ArrayList<>();
+
+      for(int i = 0; i < frames.length; i++){
+        if(frames[i] > 0 || onsets[i] > 0){
+          Map<String, Object> temp = new HashMap<>();
+          temp.put("key", i );
+          temp.put("frame", frames[i] );
+          temp.put("onset", onsets[i] );
+          temp.put("offset", offsets[i] );
+          temp.put("velocity", velocities[i] );
+          flutterResult.add(temp);
         }
       }
-
-      List<Integer> resultList = new ArrayList<Integer>();
-      for (int i = 0; i < 88; i++) {
-        if (result[i] > threshold){
-          resultList.add(i);
-        }
+      if(flutterResult.size() > 0){
+        getResult(flutterResult);
       }
-      getResult(resultList);
     }
   }
 
-  public void getResult(List<Integer> recognitionResult) {
+  public void getResult(List<Map<String,Object>> recognitionResult) {
     //passing data from platform to flutter requires ui thread
     runOnUIThread(() ->{
       if(events != null){
