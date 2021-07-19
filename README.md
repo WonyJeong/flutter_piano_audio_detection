@@ -119,32 +119,13 @@ Please look at the [example](https://github.com/WonyJeong/flutter_piano_audio_de
       result = fpad.startAudioRecognition();
       result!.listen((event) {
         setState(() {
-          notes = fpad.getNotes(event); // notes = [C3, E3, G3]
+          notes = fpad.getNotes(event); // notes = [C3, D3]
         });
       });
     }
-    
     // ...
-  
   }
 ```
-
-  3. If you just want to use midi number instead of NoteName,
-  
-  ``` dart
-      
-      List<int> notes = [];
-  
-      void getResult() {
-        result = fpad.startAudioRecognition();
-        result!.listen((event) {
-          setState(() {
-            notes = event; // notes = [C3, E3, G3]
-          });
-        });
-    }
-  ```
-  
   
 ## License
 
