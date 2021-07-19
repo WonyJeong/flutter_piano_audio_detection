@@ -17,9 +17,11 @@ extension SwiftFlutterPianoAudioDetectionPlugin: AudioInputManagerDelegate {
 public class SwiftFlutterPianoAudioDetectionPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
     // MARK : Flutter Plugin Variables
     private var flutterResult : FlutterResult!
-    private var result : [Int]?
+    private var result : [Dictionary<String, Any>]?
+    private var arguments : [String : AnyObject]!
     private var events : FlutterEventSink!
     private var registrar : FlutterPluginRegistrar
+    
 
     // MARK: Objects Handling Core Functionality
     private var modelDataHandler: ModelDataHandler? =
@@ -29,7 +31,7 @@ public class SwiftFlutterPianoAudioDetectionPlugin: NSObject, FlutterPlugin, Flu
     // MARK: Instance Variables
     private var prevKeys: [Int] = Array(repeating: 0, count: 88)
     private var bufferSize: Int = 0
-    private var threshold: Int = 10
+    private var threshold: Int = 20
 
     /// TensorFlow Lite `Interpreter` object for performing inference on a given model.
     private var interpreter: Interpreter!
@@ -56,6 +58,7 @@ public class SwiftFlutterPianoAudioDetectionPlugin: NSObject, FlutterPlugin, Flu
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        self.arguments = call.arguments as? [String: AnyObject]
         self.flutterResult = result
         switch call.method {
         case "prepare":
@@ -92,6 +95,7 @@ public class SwiftFlutterPianoAudioDetectionPlugin: NSObject, FlutterPlugin, Flu
     
     public func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
         self.events = events
+        self.arguments = arguments as? [String: AnyObject]
         return nil
     }
     public func onCancel(withArguments arguments: Any?) -> FlutterError? {
@@ -114,15 +118,9 @@ public class SwiftFlutterPianoAudioDetectionPlugin: NSObject, FlutterPlugin, Flu
     
     private func runModel(onBuffer buffer: [Int16]) {
         self.result = modelDataHandler?.runModel(onBuffer: buffer)
-        guard let nowKeys = result else { return }
-        var resultList : [Int] = Array()
-        for i in 0...87 {
-            if(nowKeys[i] > 20) {
-                resultList.append(i)
-            }
-        }
-        if(!resultList.isEmpty){
-            events(resultList) // send event
+        guard let flutterResultList = result else { return }
+        if (!flutterResultList.isEmpty){
+            events(flutterResultList)
         }
     }
 }

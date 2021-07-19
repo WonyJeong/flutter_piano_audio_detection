@@ -71,9 +71,12 @@ class ModelDataHandler {
 
     // MARK: - Internal Methods
     /// Invokes the `Interpreter` and processes and returns the inference results.
-    func runModel(onBuffer buffer: [Int16]) -> [Int]? {
+    func runModel(onBuffer buffer: [Int16]) -> [Dictionary<String, Any>]? {
         let interval: TimeInterval
-        let outputTensor: Tensor
+        let outputFrame: Tensor
+        let outputOnset: Tensor
+        let outputOffset: Tensor
+        let outputVelocity: Tensor
         do {
             // Copy the `[Int16]` buffer data as an array of `Float`s to the audio buffer input `Tensor`'s.
             let audioBufferData = Data(copyingBufferOf: buffer.map { Float($0) / maxInt16AsFloat32 })
@@ -85,24 +88,41 @@ class ModelDataHandler {
             interval = Date().timeIntervalSince(startDate) * 1000
 
             // Get the output `Tensor` to process the inference results.
-            outputTensor = try interpreter.output(at: 0)
+            outputFrame = try interpreter.output(at: 0)
+            outputOnset = try interpreter.output(at: 1)
+            outputOffset = try interpreter.output(at: 2)
+            outputVelocity = try interpreter.output(at: 3)
         } catch let error {
             print("Failed to invoke the interpreter with error: \(error.localizedDescription)")
             return nil
         }
 
         // Gets the formatted and averaged results.
-        let result = [Float32](unsafeData: outputTensor.data) ?? [] // Array length is 32*88
-        var keys = Array(repeating: 0, count: 88)
-        for i in 0...31 {
-            let offset = i * 88
-            for j in 0...87 {
-                if(result[offset+j] > 0) { // sigmoid threshold is 0.5
-                    keys[j] += 1
-                }
+        let frames : [Float32] = [Float32](unsafeData: outputFrame.data) ?? [] // Array length is 32*88
+        let onsets = [Float32](unsafeData: outputOnset.data) ?? [] // Array length is 32*88
+        let offsets = [Float32](unsafeData: outputOffset.data) ?? [] // Array length is 32*88
+        let velocities = [Float32](unsafeData: outputVelocity.data) ?? [] // Array length is 32*88
+        
+        var result : [Dictionary<String, Any>] = []
+        
+        for i in 0...87 {
+            let frame : Float32 = frames[i]
+            let onset : Float32 = onsets[i]
+            let offset : Float32 = offsets[i]
+            let velocitiy : Float32 = velocities[i]
+            
+            if(frame > 0 || onset > 0){
+                let dic : Dictionary<String, Any> = [
+                    "key" : i,
+                    "frame" : frame,
+                    "onset" : onset,
+                    "offset" : offset,
+                    "velocitiy" : velocitiy
+                ]
+                result.append(dic)
             }
         }
-        return keys
+        return result
     }
 }
 
