@@ -25,10 +25,6 @@ class _MyAppState extends State<MyApp> {
     fpad.prepare();
   }
 
-  void prepare() {
-    fpad.prepare();
-  }
-
   void start() {
     fpad.start();
     getResult();
@@ -44,7 +40,6 @@ class _MyAppState extends State<MyApp> {
       setState(() {
         notes = fpad.getNotes(event);
       });
-      print(notes);
     });
   }
 

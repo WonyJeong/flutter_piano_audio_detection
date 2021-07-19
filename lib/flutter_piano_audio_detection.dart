@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'note_parser.dart';
 
 enum audioPermissionState { GRANTED, DENIED }
 enum tfLiteState { WAIT, PERMISSION_DENIED, ISLODING, SUCCESS, ERROR }
@@ -9,7 +8,6 @@ enum recordingState { START, STOP, ERROR }
 final String logTag = "FLUTTER_PIANO_AUDIO_DETECTION_PLUGIN : ";
 
 class FlutterPianoAudioDetection {
-  NoteParser noteParser = new NoteParser();
   tfLiteState _tfLiteState = tfLiteState.WAIT;
   recordingState _recordingState = recordingState.STOP;
   audioPermissionState _audioPermissionState = audioPermissionState.DENIED;
@@ -65,16 +63,54 @@ class FlutterPianoAudioDetection {
     _recordingState = recordingState.STOP;
   }
 
-  List<String> getNotes(List<dynamic> event) {
+  /// `event` type is List<Map<String, dynamic>>
+  ///
+  /// Map<String, dynamic> has keys `[key, frame, onset, offset, velocity]`
+  ///
+  ///`getNotesDetail` is return recognized notes and print `[key, frame, onset, offset, velocity]` details.
+  List<String> getNotesDetail(List<dynamic> event) {
     List<String> notes = [];
     event.forEach((element) {
-      notes.add(getNoteName(element));
+      print(logTag +
+          getNoteName(element["key"]) +
+          "    " +
+          element["frame"].toString() +
+          "    " +
+          element["onset"].toString() +
+          "    " +
+          element["offset"].toString());
     });
     return notes;
   }
 
-  String getNoteName(int pianoKeyNumber) {
-    return noteParser.getNoteName(pianoKeyNumber);
+  ///`getNotes` is return recognized notes.
+  List<String> getNotes(List<dynamic> event) {
+    List<String> notes = [];
+    event.forEach((element) {
+      notes.add(getNoteName(element["key"]));
+    });
+    return notes;
+  }
+
+  String getNoteName(int n) {
+    int offset = n % 12;
+    String octave =
+        offset < 3 ? (n ~/ 12).toString() : (n ~/ 12 + 1).toString();
+    List<String> notes = [
+      "A",
+      "A#",
+      "B",
+      "C",
+      "C#",
+      "D",
+      "D#",
+      "E",
+      "F",
+      "F#",
+      "G",
+      "G#"
+    ];
+    return notes[n % 12] + octave;
   }
 
   tfLiteState get getTfLiteState => _tfLiteState;
