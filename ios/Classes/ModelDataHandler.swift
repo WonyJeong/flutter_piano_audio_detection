@@ -77,6 +77,7 @@ class ModelDataHandler {
         let outputOnset: Tensor
         let outputOffset: Tensor
         let outputVelocity: Tensor
+        
         do {
             // Copy the `[Int16]` buffer data as an array of `Float`s to the audio buffer input `Tensor`'s.
             let audioBufferData = Data(copyingBufferOf: buffer.map { Float($0) / maxInt16AsFloat32 })
@@ -96,30 +97,29 @@ class ModelDataHandler {
             print("Failed to invoke the interpreter with error: \(error.localizedDescription)")
             return nil
         }
-
-        // Gets the formatted and averaged results.
-        let frames : [Float32] = [Float32](unsafeData: outputFrame.data) ?? [] // Array length is 32*88
-        let onsets = [Float32](unsafeData: outputOnset.data) ?? [] // Array length is 32*88
-        let offsets = [Float32](unsafeData: outputOffset.data) ?? [] // Array length is 32*88
-        let velocities = [Float32](unsafeData: outputVelocity.data) ?? [] // Array length is 32*88
+        
+        // Array length is 32*88
+        let frames : [Float32] = [Float32](unsafeData: outputFrame.data) ?? []
+        let onsets : [Float32] = [Float32](unsafeData: outputOnset.data) ?? []
+        let offsets : [Float32] = [Float32](unsafeData: outputOffset.data) ?? []
+        let velocities : [Float32] = [Float32](unsafeData: outputVelocity.data) ?? []
         
         var result : [Dictionary<String, Any>] = []
         
-        for i in 0...87 {
-            let frame : Float32 = frames[i]
-            let onset : Float32 = onsets[i]
-            let offset : Float32 = offsets[i]
-            let velocitiy : Float32 = velocities[i]
-            
-            if(frame > 0 || onset > 0){
-                let dic : Dictionary<String, Any> = [
-                    "key" : i,
-                    "frame" : frame,
-                    "onset" : onset,
-                    "offset" : offset,
-                    "velocitiy" : velocitiy
-                ]
-                result.append(dic)
+        for i in 0...31 {
+            let offset = i * 88
+            for j in 0...87 {
+                let idx = offset + j
+                if(frames[idx] > 0 || onsets[idx] > 0) {
+                    let dic : Dictionary<String, Any> = [
+                        "key" : j,
+                        "frame" : frames[idx],
+                        "onset" : onsets[idx],
+                        "offset" : offsets[idx],
+                        "velocitiy" : velocities[idx]
+                    ]
+                    result.append(dic)
+                }
             }
         }
         return result
