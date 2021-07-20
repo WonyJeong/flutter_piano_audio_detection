@@ -282,24 +282,28 @@ public class FlutterPianoAudioDetectionPlugin implements FlutterPlugin, MethodCa
       outputMap.put(idxOffsetLogits, new float [1][OUT_STEP_NOTES][88]);
       outputMap.put(idxVelocityValue, new float [1][OUT_STEP_NOTES][88]);
 
+      long startTime = new Date().getTime();
       tfLite.runForMultipleInputsOutputs(inputArray,outputMap);;
+      long lastProcessingTimeMs = new Date().getTime() - startTime;
 
-       float[] frames = ((float [][][]) outputMap.get(idxFrameLogits))[0][0];
-      float[] onsets = ((float [][][]) outputMap.get(idxOnsetLogits))[0][0];
-      float[] offsets = ((float [][][]) outputMap.get(idxOffsetLogits))[0][0];
-      float[] velocities = ((float [][][]) outputMap.get(idxVelocityValue))[0][0];
+      float[][] frames = ((float [][][]) outputMap.get(idxFrameLogits))[0];
+      float[][] onsets = ((float [][][]) outputMap.get(idxOnsetLogits))[0];
+      float[][] offsets = ((float [][][]) outputMap.get(idxOffsetLogits))[0];
+      float[][] velocities = ((float [][][]) outputMap.get(idxVelocityValue))[0];
 
       List<Map<String, Object>> flutterResult = new ArrayList<>();
 
       for(int i = 0; i < frames.length; i++){
-        if(frames[i] > 0 || onsets[i] > 0){
-          Map<String, Object> temp = new HashMap<>();
-          temp.put("key", i );
-          temp.put("frame", frames[i] );
-          temp.put("onset", onsets[i] );
-          temp.put("offset", offsets[i] );
-          temp.put("velocity", velocities[i] );
-          flutterResult.add(temp);
+        for(int j = 0 ; j < frames[i].length; j++) {
+          if(frames[i][j] > 0 || onsets[i][j] > 0){
+            Map<String, Object> temp = new HashMap<>();
+            temp.put("key", j );
+            temp.put("frame", frames[i][j] );
+            temp.put("onset", onsets[i][j] );
+            temp.put("offset", offsets[i][j] );
+            temp.put("velocity", velocities[i][j] );
+            flutterResult.add(temp);
+          }
         }
       }
       if(flutterResult.size() > 0){
