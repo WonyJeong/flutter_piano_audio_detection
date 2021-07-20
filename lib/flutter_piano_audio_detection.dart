@@ -85,11 +85,13 @@ class FlutterPianoAudioDetection {
 
   ///`getNotes` is return recognized notes.
   List<String> getNotes(List<dynamic> event) {
-    List<String> notes = [];
+    Set<String> notes = {};
     event.forEach((element) {
       notes.add(getNoteName(element["key"]));
     });
-    return notes;
+    List<String> result = notes.toList();
+    result.sort();
+    return result;
   }
 
   String getNoteName(int n) {
