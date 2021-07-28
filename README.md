@@ -15,6 +15,12 @@ To keep this project alive, consider giving a star or a like. Contributors are a
 
 <br>
 
+## Demo
+![ezgif com-gif-maker (1)](https://user-images.githubusercontent.com/59948675/127267947-e31aa51a-b613-4ed8-b156-46e744081b6f.gif)
+
+<br>
+
+
 ## Setting up a Flutter app with flutter_piano_audio_detection
 
 ### 1. Setting Tensorflow model file into your project
