@@ -138,4 +138,5 @@ Please look at the [example](https://github.com/WonyJeong/flutter_piano_audio_de
 MIT
   
 ## Reference
-- TensorflowLite https://www.tensorflow.org/lite?hl=ko
+- TensorflowLite https://www.tensorflow.org/lite
+- Goole Magenta https://github.com/magenta/magenta
