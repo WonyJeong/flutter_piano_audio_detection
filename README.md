@@ -15,7 +15,7 @@ To keep this project alive, consider giving a star or a like. Contributors are a
 
 <br>
 
-## Demo
+## Example Demo 
 ![ezgif com-gif-maker](https://user-images.githubusercontent.com/59948675/128307922-7016caa3-c276-4824-9012-830379ec4dfe.gif)
 
 <br>
