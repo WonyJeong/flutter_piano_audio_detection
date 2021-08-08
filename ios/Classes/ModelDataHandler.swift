@@ -116,7 +116,7 @@ class ModelDataHandler {
                         "frame" : frames[idx],
                         "onset" : onsets[idx],
                         "offset" : offsets[idx],
-                        "velocitiy" : velocities[idx]
+                        "velocity" : velocities[idx]
                     ]
                     result.append(dic)
                 }
