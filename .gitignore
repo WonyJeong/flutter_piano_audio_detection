@@ -9,3 +9,5 @@ build/
 android/src/main/assets
 .idea/vcs.xml
 *.tflite
+*.plist
+*.pbxproj

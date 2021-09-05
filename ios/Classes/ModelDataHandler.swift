@@ -58,6 +58,7 @@ class ModelDataHandler {
         self.threadCount = threadCount
         var options = Interpreter.Options()
         options.threadCount = threadCount
+        
         do {
         // Create the `Interpreter`.
         interpreter = try Interpreter(modelPath: modelPath, options: options)

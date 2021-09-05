@@ -1,3 +1,9 @@
+## 1.0.3
+
+* Add getNotesDetail function
+* Delete check permission logic. Now, Permission check must be performed by the app.
+* Increased thread count to 4 on Android.
+
 ## 1.0.2
 
 * Modified Recognize Logic.

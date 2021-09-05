@@ -124,7 +124,10 @@ public class FlutterPianoAudioDetectionPlugin implements FlutterPlugin, MethodCa
   private void loadModel() {
     Log.v(LOG_TAG, "Audio Engine Prepare");
     try {
-      tfLite = new Interpreter(loadModelFile(context, MODEL_FILENAME));
+      Interpreter.Options options = new Interpreter.Options();
+      options.setNumThreads(4);
+
+      tfLite = new Interpreter(loadModelFile(context, MODEL_FILENAME), options);
       Log.v(LOG_TAG, "Tflite Model Successfully Loaded");
       result.success(true);
     }

@@ -18,6 +18,7 @@ class _MyAppState extends State<MyApp> {
 
   Stream<List<dynamic>>? result;
   List<String> notes = [];
+  String printText = "";
 
   @override
   void initState() {
@@ -37,9 +38,12 @@ class _MyAppState extends State<MyApp> {
   void getResult() {
     result = fpad.startAudioRecognition();
     result!.listen((event) {
+      printText = "";
       setState(() {
         notes = fpad.getNotes(event);
       });
+      notes.map((e) => {printText += e});
+      print(notes);
     });
   }
 
@@ -51,7 +55,10 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Flutter Piano Audio Detection'),
         ),
         body: Center(
-          child: Text("Hello FPAD."),
+          child: Text(
+            '${notes}',
+            style: TextStyle(fontSize: 72, fontWeight: FontWeight.bold),
+          ),
         ),
         floatingActionButton: Container(
           child: ValueListenableBuilder(

@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
-import 'package:permission_handler/permission_handler.dart';
 
-enum audioPermissionState { GRANTED, DENIED }
 enum tfLiteState { WAIT, PERMISSION_DENIED, ISLODING, SUCCESS, ERROR }
 enum recordingState { START, STOP, ERROR }
 final String logTag = "FLUTTER_PIANO_AUDIO_DETECTION_PLUGIN : ";
@@ -10,7 +8,6 @@ final String logTag = "FLUTTER_PIANO_AUDIO_DETECTION_PLUGIN : ";
 class FlutterPianoAudioDetection {
   tfLiteState _tfLiteState = tfLiteState.WAIT;
   recordingState _recordingState = recordingState.STOP;
-  audioPermissionState _audioPermissionState = audioPermissionState.DENIED;
 
   static const MethodChannel _channel =
       const MethodChannel('flutter_piano_audio_detection');
@@ -22,45 +19,28 @@ class FlutterPianoAudioDetection {
     return _eventChannel.receiveBroadcastStream().cast();
   }
 
-  Future<bool> checkPermission() async {
-    var _status = await Permission.microphone.status;
-
-    if (_status.isDenied) {
-      bool status = await Permission.microphone.request().isGranted;
-      status
-          ? _audioPermissionState = audioPermissionState.GRANTED
-          : _audioPermissionState = audioPermissionState.DENIED;
-      return status;
-    } else {
-      _audioPermissionState = audioPermissionState.GRANTED;
-      return true;
-    }
-  }
-
   prepare() async {
-    if (await checkPermission()) {
-      _tfLiteState = tfLiteState.ISLODING;
-      bool loadedModel = await _channel.invokeMethod("prepare");
-      loadedModel
-          ? _tfLiteState = tfLiteState.SUCCESS
-          : _tfLiteState = tfLiteState.ERROR;
-    } else {
-      _tfLiteState = tfLiteState.PERMISSION_DENIED;
+    try {
+      await _channel.invokeMethod("prepare");
+    } catch (e) {
+      print('${logTag} : ${e}');
     }
   }
 
   start() async {
-    if (_tfLiteState == tfLiteState.SUCCESS) {
+    try {
       await _channel.invokeMethod("start");
-      _recordingState = recordingState.START;
-    } else {
-      print(logTag + "audio permission denied.");
+    } catch (e) {
+      print('${logTag} : ${e}');
     }
   }
 
   stop() async {
-    await _channel.invokeMethod("stop");
-    _recordingState = recordingState.STOP;
+    try {
+      await _channel.invokeMethod("stop");
+    } catch (e) {
+      print('${logTag} : ${e}');
+    }
   }
 
   /// `event` type is List<Map<String, dynamic>>
@@ -68,19 +48,16 @@ class FlutterPianoAudioDetection {
   /// Map<String, dynamic> has keys `[key, frame, onset, offset, velocity]`
   ///
   ///`getNotesDetail` is return recognized notes and print `[key, frame, onset, offset, velocity]` details.
-  List<String> getNotesDetail(List<dynamic> event) {
-    List<String> notes = [];
+  Map<String, String> getNotesDetail(List<dynamic> event) {
+    Map<String, String> result = Map();
     event.forEach((element) {
-      print(logTag +
-          getNoteName(element["key"]) +
-          "    " +
-          element["frame"].toString() +
-          "    " +
-          element["onset"].toString() +
-          "    " +
-          element["offset"].toString());
+      result['key'] = getNoteName(element["key"]);
+      result['frame'] = element["frame"].toString();
+      result['onset'] = element["onset"].toString();
+      result['offset'] = element["offset"].toString();
+      result['velocity'] = element["velocity"].toString();
     });
-    return notes;
+    return result;
   }
 
   ///`getNotes` is return recognized notes.
@@ -90,6 +67,16 @@ class FlutterPianoAudioDetection {
       notes.add(getNoteName(element["key"]));
     });
     List<String> result = notes.toList();
+    result.sort();
+    return result;
+  }
+
+  List<int> getKeyNumber(List<dynamic> event) {
+    Set<int> notes = {};
+    event.forEach((element) {
+      notes.add(int.parse(element["key"]));
+    });
+    List<int> result = notes.toList();
     result.sort();
     return result;
   }
@@ -117,5 +104,4 @@ class FlutterPianoAudioDetection {
 
   tfLiteState get getTfLiteState => _tfLiteState;
   recordingState get getRecordingState => _recordingState;
-  audioPermissionState get getAudioPermissionState => _audioPermissionState;
 }
