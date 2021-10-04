@@ -74,7 +74,7 @@ class FlutterPianoAudioDetection {
   List<int> getKeyNumber(List<dynamic> event) {
     Set<int> notes = {};
     event.forEach((element) {
-      notes.add(int.parse(element["key"]));
+      notes.add(element["key"]);
     });
     List<int> result = notes.toList();
     result.sort();
