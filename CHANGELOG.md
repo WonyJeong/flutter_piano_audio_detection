@@ -1,3 +1,7 @@
+## 1.0.4
+
+* Fix getKeyNumber type error
+
 ## 1.0.3
 
 * Add getNotesDetail function

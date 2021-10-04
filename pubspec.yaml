@@ -1,6 +1,6 @@
 name: flutter_piano_audio_detection
 description: Flutter plug-in for Piano Audio Detection. Can recognize the piano sound in real time using Google Magenta tflite model.
-version: 1.0.3
+version: 1.0.4
 maintainer: WonyJeong
 homepage: https://github.com/WonyJeong
 repository : https://github.com/WonyJeong/flutter_piano_audio_detection
