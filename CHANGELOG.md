@@ -1,3 +1,7 @@
+## 1.0.5
+
+* Fix Release Engine Module
+
 ## 1.0.4
 
 * Fix getKeyNumber type error
