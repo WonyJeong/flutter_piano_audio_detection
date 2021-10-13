@@ -102,7 +102,9 @@ class AudioInputManager: NSObject {
             print("AudioEngine is Running")
             return;
         }
-
+        audioEngine = AVAudioEngine()
+        prepareMicrophone()
+        
         audioEngine.prepare()
         print("Audio Engine Prepare")
         do {
