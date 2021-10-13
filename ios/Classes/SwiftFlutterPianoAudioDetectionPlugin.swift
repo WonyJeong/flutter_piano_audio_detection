@@ -106,7 +106,7 @@ public class SwiftFlutterPianoAudioDetectionPlugin: NSObject, FlutterPlugin, Flu
     private func start(){
         prevKeys = Array(repeating: 0, count: 88)
         guard let workingAudioInputManager = audioInputManager else { return }
-        print("Audio Manager Loaded")
+        print("Audio Engine Loaded")
         self.bufferSize = workingAudioInputManager.bufferSize
         workingAudioInputManager.startTappingMicrophone()
     }
